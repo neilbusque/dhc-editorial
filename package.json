@@ -1,0 +1,52 @@
+{
+  "name": "dhc-editorial",
+  "type": "module",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "postbuild": "pagefind --site dist"
+  },
+  "dependencies": {
+    "@astrojs/check": "0.9.9",
+    "@astrojs/mdx": "5.0.6",
+    "@astrojs/react": "5.0.5",
+    "@astrojs/rss": "4.0.18",
+    "@astrojs/sitemap": "3.7.2",
+    "@iconify-json/mdi": "^1.2.3",
+    "@radix-ui/react-slot": "^1.2.4",
+    "@tailwindcss/vite": "^4.2.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@types/sanitize-html": "^2.16.1",
+    "astro": "6.3.5",
+    "astro-icon": "^1.1.5",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "katex": "^0.16.45",
+    "lucide-react": "^0.556.0",
+    "markdown-it": "^14.1.1",
+    "mdast-util-to-string": "^4.0.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "reading-time": "^1.5.0",
+    "rehype-katex": "^7.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
+    "sanitize-html": "^2.17.2",
+    "sharp": "^0.33.5",
+    "tailwind-merge": "^3.5.0",
+    "tailwindcss": "^4.2.2",
+    "typescript": "^5.9.3",
+    "undici": "^7.24.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.19",
+    "pagefind": "^1.5.0",
+    "prettier": "^3.8.1",
+    "prettier-plugin-astro": "^0.14.1"
+  }
+}

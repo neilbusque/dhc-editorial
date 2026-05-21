@@ -1,0 +1,87 @@
+---
+import { Icon } from "astro-icon/components";
+import { COMPANY, SOCIAL_LINKS } from "../consts";
+const today = new Date();
+---
+
+<footer class="dhc-footer font-body">
+  <div class="hairline mb-10"></div>
+
+  <div class="grid">
+    <div class="col">
+      <div class="eyebrow mb-3">{COMPANY.shortName}</div>
+      <p class="display">{COMPANY.name}</p>
+      <p class="small mt-2">{COMPANY.tagline}</p>
+    </div>
+
+    <div class="col">
+      <div class="eyebrow mb-3">Visit</div>
+      <p class="small">{COMPANY.city}, {COMPANY.state}</p>
+      <p class="small">{COMPANY.serviceArea}</p>
+      <p class="small mt-2">{COMPANY.hours}</p>
+    </div>
+
+    <div class="col">
+      <div class="eyebrow mb-3">Reach us</div>
+      <a class="small editorial" href={SOCIAL_LINKS.phone}>{COMPANY.phone}</a><br />
+      <a class="small editorial" href={SOCIAL_LINKS.email}>{COMPANY.email}</a>
+    </div>
+
+    <div class="col">
+      <div class="eyebrow mb-3">Follow</div>
+      <div class="socials">
+        <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <Icon name="mdi:instagram" class="h-5 w-5" />
+        </a>
+        <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+          <Icon name="mdi:facebook" class="h-5 w-5" />
+        </a>
+        <a id="rss-link" href="#" target="_blank" rel="noopener noreferrer"
+           style="visibility: hidden; width: 0; height: 0;" aria-label="RSS feed">
+          <Icon name="mdi:rss" class="h-5 w-5" />
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <span>© {today.getFullYear()} {COMPANY.name}. Licensed &amp; insured in NJ.</span>
+    <span class="codename">— {COMPANY.shortName} · est. {COMPANY.founded}</span>
+  </div>
+  <slot />
+</footer>
+<script src="../scripts/rss.ts"></script>
+
+<style>
+  .dhc-footer { margin-top: 6rem; }
+  .grid {
+    display: grid; gap: 2.5rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 700px) { .grid { grid-template-columns: 1.4fr 1fr 1fr 1fr; } }
+
+  .display {
+    font-family: var(--font-fraunces), serif;
+    font-style: italic; font-weight: 460;
+    font-size: 1.35rem; letter-spacing: -0.01em;
+    color: var(--color-ink);
+  }
+  .small {
+    font-size: 0.92rem; line-height: 1.55;
+    color: var(--color-ink-2);
+  }
+  .socials { display: inline-flex; gap: 0.85rem; }
+  .socials a { color: var(--color-ink); }
+  .socials a:hover { color: var(--color-clay); }
+
+  .bottom {
+    margin-top: 3.5rem;
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-line);
+    font-family: var(--font-jetbrains-mono), monospace;
+    font-size: 0.72rem; letter-spacing: 0.05em;
+    color: var(--color-ink-2);
+  }
+  .codename { font-style: normal; }
+</style>

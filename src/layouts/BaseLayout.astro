@@ -1,0 +1,198 @@
+---
+import { ClientRouter } from "astro:transitions";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import ScrollToTop from "../components/ScrollToTop";
+import { Font } from "astro:assets";
+import "../styles/global.css";
+import {
+  SITE_TITLE,
+  SITE_DESCRIPTION,
+  SITE_AUTHOR,
+  CDN_FAVICON_URL,
+  CDN_COVER_IMAGE_URL,
+  SOCIAL_LINKS,
+  COMPANY,
+} from "../consts";
+
+const baseUrl = new URL(Astro.request.url).origin;
+
+export interface Props {
+  image?: string;
+  description?: string;
+  author?: string;
+  pubDate?: string | Date;
+  updatedDate?: string | Date;
+  title?: string;
+  site_name?: string;
+  alt?: string;
+  is404Page?: boolean;
+  hideHeaderFooter?: boolean;
+}
+
+const {
+  image,
+  description,
+  author,
+  pubDate,
+  updatedDate,
+  title,
+  site_name,
+  alt,
+  is404Page = false,
+  hideHeaderFooter = false,
+} = Astro.props;
+
+function safeJsonLd(obj: Record<string, unknown>): string {
+  return JSON.stringify(obj).replace(/</g, "\\u003c");
+}
+
+// LocalBusiness / Organization schema for DHC
+const orgSchema = {
+  "@context": "https://schema.org",
+  "@type": "GeneralContractor",
+  name: COMPANY.name,
+  url: baseUrl,
+  telephone: COMPANY.phone,
+  email: COMPANY.email,
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: COMPANY.city,
+    addressRegion: COMPANY.state,
+    addressCountry: "US",
+  },
+  areaServed: COMPANY.serviceArea,
+  sameAs: [SOCIAL_LINKS.instagram, SOCIAL_LINKS.facebook],
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: site_name || SITE_TITLE,
+  url: baseUrl,
+  description: description || SITE_DESCRIPTION,
+};
+
+const pathSegments = Astro.url.pathname.split("/").filter((s) => s.length > 0);
+const breadcrumbItems = [
+  { "@type": "ListItem", position: 1, name: "Home", item: baseUrl },
+  ...pathSegments.map((segment, i) => ({
+    "@type": "ListItem",
+    position: i + 2,
+    name: i === pathSegments.length - 1 && title
+      ? title
+      : segment.replace(/[-_]/g, " "),
+    item: `${baseUrl}/${pathSegments.slice(0, i + 1).join("/")}`,
+  })),
+];
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: breadcrumbItems,
+};
+
+const formattedPubDate = pubDate
+  ? (pubDate instanceof Date ? pubDate.toISOString() : new Date(pubDate).toISOString())
+  : null;
+const formattedUpdatedDate = updatedDate
+  ? (updatedDate instanceof Date ? updatedDate.toISOString() : new Date(updatedDate).toISOString())
+  : null;
+
+const metaImage = image || `${baseUrl}${CDN_COVER_IMAGE_URL}`;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/png" href={CDN_FAVICON_URL} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, baseUrl).href} />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Fonts -->
+    <Font cssVariable="--font-fraunces" preload />
+    <Font cssVariable="--font-inter" preload />
+    <Font cssVariable="--font-jetbrains-mono" />
+
+    <title>{title ? `${title} · ${SITE_TITLE}` : SITE_TITLE}</title>
+    <meta name="description" content={description || SITE_DESCRIPTION} />
+    <meta name="author" content={author || SITE_AUTHOR} />
+
+    <meta property="og:type" content={pubDate ? "article" : "website"} />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content={title || SITE_TITLE} />
+    <meta property="og:description" content={description || SITE_DESCRIPTION} />
+    <meta property="og:site_name" content={site_name || SITE_TITLE} />
+    <meta property="og:image" content={metaImage} />
+    <meta property="og:image:alt" content={alt || `Cover image for ${SITE_TITLE}`} />
+    <meta property="og:locale" content="en_US" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title || SITE_TITLE} />
+    <meta name="twitter:description" content={description || SITE_DESCRIPTION} />
+    <meta name="twitter:image" content={metaImage} />
+
+    {pubDate && (
+      <>
+        <meta property="article:published_time" content={formattedPubDate} />
+        <meta property="article:author" content={author || SITE_AUTHOR} />
+      </>
+    )}
+    {updatedDate && (
+      <meta property="article:modified_time" content={formattedUpdatedDate} />
+    )}
+
+    <script type="application/ld+json" set:html={safeJsonLd(orgSchema)} />
+    <script type="application/ld+json" set:html={safeJsonLd(websiteSchema)} />
+    <script type="application/ld+json" set:html={safeJsonLd(breadcrumbSchema)} />
+
+    <ClientRouter />
+  </head>
+  <body class="dhc-body">
+    {!hideHeaderFooter && (
+      <div class="page-frame">
+        <Header is404Page={is404Page} />
+      </div>
+    )}
+    <main class="page-frame min-w-0 flex-1">
+      <slot />
+    </main>
+    <ScrollToTop client:idle />
+    {!hideHeaderFooter && (
+      <div class="page-frame">
+        <Footer />
+      </div>
+    )}
+  </body>
+</html>
+
+<style is:global>
+  .dhc-body {
+    display: flex; flex-direction: column;
+    min-height: 100vh; overflow-x: hidden;
+    background: var(--color-cream);
+    color: var(--color-ink);
+  }
+  .page-frame {
+    width: 100%;
+    max-width: 1400px;
+    margin-left: auto; margin-right: auto;
+    padding-left: 1.5rem; padding-right: 1.5rem;
+  }
+  @media (min-width: 900px) {
+    .page-frame { padding-left: 2.5rem; padding-right: 2.5rem; }
+  }
+  @media (min-width: 1200px) {
+    .page-frame { padding-left: 4rem; padding-right: 4rem; }
+  }
+
+  .astro-code, .astro-code span {
+    background-color: var(--shiki-light-bg) !important;
+    color: var(--shiki-light) !important;
+  }
+  .dark .astro-code, .dark .astro-code span {
+    background-color: var(--shiki-dark-bg) !important;
+    color: var(--shiki-dark) !important;
+  }
+</style>

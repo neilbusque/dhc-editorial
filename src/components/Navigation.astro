@@ -1,0 +1,71 @@
+---
+import Pagefind from "./Pagefind.astro";
+
+interface NavItem { label: string; href: string; }
+
+const NAV: NavItem[] = [
+  { label: "Projects", href: "/projects/" },
+  { label: "Journal",  href: "/journal/" },
+  { label: "Gallery",  href: "/gallery/" },
+];
+
+const pathname = Astro.url.pathname;
+const isCurrent = (href: string): boolean => {
+  const base = href.replace(/tags\/?$/, "");
+  return pathname === href || pathname.startsWith(base);
+};
+---
+
+<nav id="nav-links" class="nav-links collapsed font-body" aria-label="Site navigation" inert>
+  {NAV.map((n) => (
+    <a href={n.href} aria-current={isCurrent(n.href) ? "page" : undefined}>{n.label}</a>
+  ))}
+  <a href="/#contact" class="contact">Get in touch</a>
+  <slot />
+</nav>
+<Pagefind />
+
+<style>
+  .nav-links {
+    position: absolute;
+    top: calc(100% + 14px);
+    right: 0;
+    width: 240px;
+    padding: 14px 0;
+    background: var(--color-paper);
+    border: 1px solid var(--color-line);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-6px);
+    z-index: 20;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .nav-links.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+
+  .nav-links a {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 14px 22px;
+    font-size: 0.95rem;
+    letter-spacing: 0;
+    text-decoration: none;
+    color: var(--color-ink);
+    font-family: var(--font-fraunces), serif;
+    font-weight: 460;
+  }
+  .nav-links a:hover { color: var(--color-clay); }
+  .nav-links a[aria-current="page"] { color: var(--color-clay); }
+  .nav-links a.contact {
+    margin: 8px 18px 0;
+    padding: 12px 18px;
+    background: var(--color-ink);
+    color: var(--color-cream);
+    font-family: var(--font-inter), sans-serif;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    justify-content: center;
+  }
+  .nav-links a.contact:hover { background: var(--color-clay); color: var(--color-cream); }
+</style>
